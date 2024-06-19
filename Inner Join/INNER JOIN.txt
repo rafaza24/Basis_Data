@@ -1,0 +1,98 @@
+MariaDB [db_join_kampus]> desc dosen;
++-----------+-------------+------+-----+---------+-------+
+| Field     | Type        | Null | Key | Default | Extra |
++-----------+-------------+------+-----+---------+-------+
+| Nip       | char(5)     | NO   | PRI | NULL    |       |
+| Nm_dosen  | varchar(35) | NO   |     | NULL    |       |
+| Thn_masuk | year(4)     | NO   |     | NULL    |       |
+| Alamat    | varchar(50) | NO   |     | NULL    |       |
++-----------+-------------+------+-----+---------+-------+
+4 rows in set (0.016 sec)
+
+MariaDB [db_join_kampus]> desc mt_kuliah
+    -> ;
++----------+-------------+------+-----+---------+-------+
+| Field    | Type        | Null | Key | Default | Extra |
++----------+-------------+------+-----+---------+-------+
+| Kd_mtkul | char(3)     | NO   | PRI | NULL    |       |
+| Nm_mtkul | varchar(35) | NO   |     | NULL    |       |
+| Sks      | int(2)      | NO   |     | NULL    |       |
++----------+-------------+------+-----+---------+-------+
+3 rows in set (0.019 sec)
+
+MariaDB [db_join_kampus]> desc mengajar;
++----------+---------+------+-----+---------+----------------+
+| Field    | Type    | Null | Key | Default | Extra          |
++----------+---------+------+-----+---------+----------------+
+| Id       | int(3)  | NO   | PRI | NULL    | auto_increment |
+| Nip      | char(5) | NO   |     | NULL    |                |
+| Kd_mtkul | char(3) | NO   |     | NULL    |                |
++----------+---------+------+-----+---------+----------------+
+3 rows in set (0.035 sec)
+
+MariaDB [db_join_kampus]> select * from mengajar;
++----+-------+----------+
+| Id | Nip   | Kd_mtkul |
++----+-------+----------+
+|  1 | 01011 | 101      |
+|  2 | 01011 | 303      |
+|  3 | 01012 | 202      |
+|  4 | 01012 | 404      |
+|  5 | 01012 | 303      |
+|  6 | 01013 | 505      |
+|  7 | 01013 | 101      |
+|  8 | 01014 | 404      |
+|  9 | 01015 | 202      |
+| 10 | 01015 | 303      |
++----+-------+----------+
+10 rows in set (0.000 sec)
+
+MariaDB [db_join_kampus]> select * from mengajar
+    -> inner join dosen on mengajar.Nip = dosen.Nip
+    -> inner join mt_kuliah on mengajar.Kd_mtkul = mt_kuliah.Kd_mtkul
+    -> where mt_kuliah.Nm_mtkul ="SIM";
++----+-------+----------+-------+---------------+-----------+-----------+----------+----------+-----+
+| Id | Nip   | Kd_mtkul | Nip   | Nm_dosen      | Thn_masuk | Alamat    | Kd_mtkul | Nm_mtkul | Sks |
++----+-------+----------+-------+---------------+-----------+-----------+----------+----------+-----+
+|  2 | 01011 | 303      | 01011 | Budi Santoso  |      2003 | Tangerang | 303      | SIM      |   4 |
+|  5 | 01012 | 303      | 01012 | Rio Hermawan  |      2009 | Jakarta   | 303      | SIM      |   4 |
+| 10 | 01015 | 303      | 01015 | Nurlaela Sari |      2014 | Depok     | 303      | SIM      |   4 |
++----+-------+----------+-------+---------------+-----------+-----------+----------+----------+-----+
+3 rows in set (0.001 sec)
+
+MariaDB [db_join_kampus]> select dosen.Nm_dosen,dosen.Thn_masuk,mt_kuliah.Nm_mtkul
+    -> from mengajar
+    -> inner join dosen on mengajar.Nip = dosen.Nip
+    -> inner join mt_kuliah on mengajar.Kd_mtkul = mt_kuliah.Kd_mtkul
+    -> where mt_kuliah.Nm_mtkul ="E-Commerce"
+    -> order by dosen.Thn_masuk;
++--------------+-----------+------------+
+| Nm_dosen     | Thn_masuk | Nm_mtkul   |
++--------------+-----------+------------+
+| Rio Hermawan |      2009 | E-Commerce |
+| Agus Supardi |      2011 | E-Commerce |
++--------------+-----------+------------+
+2 rows in set (0.001 sec)
+
+MariaDB [db_join_kampus]> select dosen.Nip,dosen.Nm_dosen as 'Nama Dosen',mt_kuliah.Nm_mtkul as 'Mengajar'
+    -> from mengajar
+    -> inner join dosen on mengajar.Nip = dosen.Nip
+    -> inner join mt_kuliah on mengajar.Kd_mtkul = mt_kuliah.Kd_mtkul
+    -> order by mt_kuliah.Nm_mtkul;
++-------+---------------+------------+
+| Nip   | Nama Dosen    | Mengajar   |
++-------+---------------+------------+
+| 01013 | Tio Sandewa   | Agama      |
+| 01011 | Budi Santoso  | Algoritma  |
+| 01013 | Tio Sandewa   | Algoritma  |
+| 01012 | Rio Hermawan  | E-Commerce |
+| 01014 | Agus Supardi  | E-Commerce |
+| 01012 | Rio Hermawan  | PTIK       |
+| 01015 | Nurlaela Sari | PTIK       |
+| 01015 | Nurlaela Sari | SIM        |
+| 01012 | Rio Hermawan  | SIM        |
+| 01011 | Budi Santoso  | SIM        |
++-------+---------------+------------+
+10 rows in set (0.001 sec)
+
+MariaDB [db_join_kampus]>
